@@ -1,9 +1,9 @@
 use curve25519_dalek::constants::RISTRETTO_BASEPOINT_POINT as G;
-use curve25519_dalek::ristretto::CompressedRistretto;
 use curve25519_dalek::scalar::Scalar;
-use lox_zkp::{toolbox::{prover::Prover, verifier::Verifier, SchnorrCS}, Transcript, CompactProof};
+use lox_zkp::{toolbox::{prover::Prover, verifier::Verifier, SchnorrCS}, Transcript};
 use rand_core::OsRng; 
 
+#[allow(nonstandard_style)]
 fn main() {
     println!("Faisons une preuve via la librairie ZKP de tor");
 
@@ -26,7 +26,7 @@ fn main() {
     let mut prouveur = Prover::new(b"preuveZK", &mut transcript_pr);
     /* Ajout des paramètres */
     let x_var = prouveur.allocate_scalar(b"x", x);  // Ajout de la clé pv
-    let (P_var, P_com) = prouveur.allocate_point(b"P", P);  // Ajout de la clé pub
+    let (P_var, _) = prouveur.allocate_point(b"P", P);  // Ajout de la clé pub
     let (G_var, _) = prouveur.allocate_point(b"G", G); // Ajout du point générateur
 
     prouveur.constrain(P_var, vec![(x_var, G_var)]); // Ajout de la contrainte P = x*G
@@ -52,6 +52,6 @@ fn main() {
 
     match verifieur.verify_compact(&preuve) {
         Ok(()) => println!("La preuve est valide"),
-        Err(r) => println!("La preuve n'est pas valide"),
+        Err(_r) => println!("La preuve n'est pas valide"),
     }
 }
